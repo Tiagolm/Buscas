@@ -4,6 +4,9 @@ using System.Linq;
 
 public class Grafo : Dictionary<Node, List<Node>>
 {
+
+    List<Node> visited;
+    
     public void PrintGraph(){
         this.Select(i => $"{i.Key.value}: {ReturnAdjacents(i.Value)}").ToList().ForEach(Console.WriteLine);
     }
@@ -67,16 +70,36 @@ public class Grafo : Dictionary<Node, List<Node>>
         return weight;
     }
 
-
     public void DFS(Node current){
 
-        if (current.Equals(null))
+        Node atual = GetNode((int)current.value);
+
+        if (atual.marked)
             return;
 
-        current.marked = true;
+        Console.Write($"{atual.value} -> ");
 
+        Mark(atual);
+        foreach (var adjacent in GetAdjacents(GetNode((int)atual.value)))
+            if (!GetNode((int)adjacent.value).marked)
+                DFS(GetNode((int)adjacent.value));
+    }
 
+    void Mark(Node nodo){
+        Node novo = new(nodo.value, nodo.reta, nodo.weight);
+        novo.marked = true;
+        ChangeKey(nodo, novo);
+    }
 
+    bool ChangeKey( Node oldKey, Node newKey)
+    {
+        List<Node> adjacents = GetAdjacents(oldKey); 
+        if (!this.Remove(oldKey))
+            return false;
+
+        this.AddNode(newKey);
+        this.AddEdges(newKey, adjacents);  // or dict.Add(newKey, value) depending on ur comfort
+        return true;
     }
 
     // void DFSUtil(Node node, bool[] visited, int weight) 
