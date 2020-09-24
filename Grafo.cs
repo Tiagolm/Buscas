@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Grafo : Dictionary<Node, List<Node>>
-{
-
-    List<Node> visited;
-    
+{   
     public void PrintGraph(){
         this.Select(i => $"{i.Key.value}: {ReturnAdjacents(i.Value)}").ToList().ForEach(Console.WriteLine);
     }
@@ -35,8 +32,7 @@ public class Grafo : Dictionary<Node, List<Node>>
     }
 
     public void AddEdges(Node node, List<Node> adjacents){
-        foreach (var n in adjacents)
-            this.AddEdge(node, n);
+        this[node].AddRange(adjacents);
     }
 
     Node GetNode(int value){
@@ -70,19 +66,31 @@ public class Grafo : Dictionary<Node, List<Node>>
         return weight;
     }
 
-    public void DFS(Node current){
-
-        Node atual = GetNode((int)current.value);
-
-        if (atual.marked)
+    public void DFS(Node current, Node target, int weight){
+        Console.Write($"{current.value} {weight} -> ");
+        
+        if ((current.marked) || (current.Equals(target)))
             return;
 
-        Console.Write($"{atual.value} -> ");
-
-        Mark(atual);
-        foreach (var adjacent in GetAdjacents(GetNode((int)atual.value)))
+        Mark(current);
+        foreach (var adjacent in GetAdjacents(GetNode((int)current.value)))
             if (!GetNode((int)adjacent.value).marked)
-                DFS(GetNode((int)adjacent.value));
+                DFS(GetNode((int)adjacent.value), target, adjacent.weight+weight);
+    }
+
+    public void DFS(Node current, Node target){
+        Stack<Node> visitados = new();  // let S be a stack
+        visitados.Push(current);     // S.push(v)
+        while(visitados.Any()){         // while S is not empty do
+        current = visitados.Pop();  // v = S.pop()
+            if(!current.marked)        // if v is not labeled as discovered then
+                Console.Write($"{current.value} -> ");Mark(GetNode((int)current.value));// label v as discovered
+                    if (current.Equals(target))
+                        break;
+            foreach (var item in GetAdjacents(GetNode((int)current.value)))// for all edges from v to w in G.adjacentEdges(v) do
+                if (!GetNode((int)item.value).marked && !visitados.Contains(GetNode((int)item.value)))
+                    visitados.Push(GetNode((int)item.value));// S.push(w)
+        }
     }
 
     void Mark(Node nodo){
@@ -91,14 +99,14 @@ public class Grafo : Dictionary<Node, List<Node>>
         ChangeKey(nodo, novo);
     }
 
-    bool ChangeKey( Node oldKey, Node newKey)
+    bool ChangeKey(Node oldKey, Node newKey)
     {
         List<Node> adjacents = GetAdjacents(oldKey); 
         if (!this.Remove(oldKey))
             return false;
 
         this.AddNode(newKey);
-        this.AddEdges(newKey, adjacents);  // or dict.Add(newKey, value) depending on ur comfort
+        this.AddEdges(newKey, adjacents);
         return true;
     }
 

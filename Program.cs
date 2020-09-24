@@ -78,7 +78,7 @@ namespace Buscas
             grafo.PrintGraph();
             // grafo.PrintGraph();
             // grafo.DFS(A, F);
-            grafo.DFS(A);
+            grafo.DFS(A, F);
             // grafo.PrintGraph();
 
             // Console.WriteLine(".--------- Escolha uma Opcao ---------.");
