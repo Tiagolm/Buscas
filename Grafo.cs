@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Grafo : Dictionary<Node, List<Node>>
-{   
+{
     public void PrintGraph(){
         this.Select(i => $"{i.Key.value}: {ReturnAdjacents(i.Value)}").ToList().ForEach(Console.WriteLine);
     }
@@ -27,11 +27,20 @@ public class Grafo : Dictionary<Node, List<Node>>
             this.AddNode(node);
     }
 
-    public void AddEdge(Node node, Node adjacent){
-        this[node].Add(adjacent);
+    public void AddEdge(Node node, Node adjacent, int weight){
+
+        Node edge = new(adjacent.value, adjacent.reta, weight);
+        this[node].Add(edge);
+    }
+
+    public void AddUndirectedEdge(Node node, Node adjacent, int weight){
+
+        this.AddEdge(node, adjacent, weight);
+        this.AddEdge(adjacent, node, weight);
     }
 
     public void AddEdges(Node node, List<Node> adjacents){
+
         this[node].AddRange(adjacents);
     }
 
@@ -66,30 +75,51 @@ public class Grafo : Dictionary<Node, List<Node>>
         return weight;
     }
 
-    public void DFS(Node current, Node target, int weight){
-        Console.Write($"{current.value} {weight} -> ");
+    // public void DFS(Node current, Node target, int weight){
+    //     Console.Write($"{current.value} {weight} -> ");
         
-        if ((current.marked) || (current.Equals(target)))
-            return;
+    //     if ((current.marked) || (current.Equals(target)))
+    //         return;
 
-        Mark(current);
-        foreach (var adjacent in GetAdjacents(GetNode((int)current.value)))
-            if (!GetNode((int)adjacent.value).marked)
-                DFS(GetNode((int)adjacent.value), target, adjacent.weight+weight);
-    }
+    //     Mark(current);
+    //     foreach (var adjacent in GetAdjacents(GetNode((int)current.value)))
+    //         if (!GetNode((int)adjacent.value).marked)
+    //             DFS(GetNode((int)adjacent.value), target, adjacent.weight+weight);
+    // }
 
     public void DFS(Node current, Node target){
         Stack<Node> visitados = new();  // let S be a stack
-        visitados.Push(current);     // S.push(v)
+        visitados.Push(current);        // S.push(v)
         while(visitados.Any()){         // while S is not empty do
-        current = visitados.Pop();  // v = S.pop()
-            if(!current.marked)        // if v is not labeled as discovered then
-                Console.Write($"{current.value} -> ");Mark(GetNode((int)current.value));// label v as discovered
+        current = visitados.Pop();      // v = S.pop()
+            if(!current.marked){        // if v is not labeled as discovered then
+                Console.Write($"{current.value} -> ");
+                Mark(GetNode((int)current.value));// label v as discovered
                     if (current.Equals(target))
                         break;
-            foreach (var item in GetAdjacents(GetNode((int)current.value)))// for all edges from v to w in G.adjacentEdges(v) do
+            }
+            foreach (var item in GetAdjacents(GetNode((int)current.value)))// for all edges from v to w in G.   adjacentEdges(v) do
                 if (!GetNode((int)item.value).marked && !visitados.Contains(GetNode((int)item.value)))
                     visitados.Push(GetNode((int)item.value));// S.push(w)
+        }
+    }
+
+    public void BFS(Node current, Node target){
+        Queue<Node> visitados = new();  
+        visitados.Enqueue(current);
+
+        while(visitados.Any()){         
+        current = visitados.Dequeue();      
+            if(!current.marked){        
+                Console.Write($"{current.value} -> ");
+                Mark(GetNode((int)current.value));
+                    if (current.Equals(target))
+                        break;
+            }
+            foreach (var item in GetAdjacents(GetNode((int)current.value)))
+                if (!GetNode((int)item.value).marked && !visitados.Contains(GetNode((int)item.value)))
+                    visitados.Enqueue(GetNode((int)item.value));
+                
         }
     }
 

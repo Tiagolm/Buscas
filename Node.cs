@@ -4,9 +4,10 @@ public struct Node
     {
         this.value = value;
         this.reta = reta;
-        this.weight = weight;
         this.marked = false;
+        this.weight = weight;
     }
+    
     public Letter value { get; set; }
     public int reta { get; set; }
     public int weight { get; set; }
