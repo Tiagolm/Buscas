@@ -26,7 +26,7 @@ namespace Buscas
 
             List<Node> nodes = new(){A, B, C, D, E, F, G, H, I, J, K, L, M};
             grafo.AddNodes(nodes);
-
+            
             grafo.AddUndirectedEdge(A, B, 36);
             grafo.AddUndirectedEdge(A, C, 61);
             grafo.AddUndirectedEdge(B, D, 31);
